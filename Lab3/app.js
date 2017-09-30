@@ -18,6 +18,7 @@ async function main(path)
         let jsonFileObject = await fileData.getFileAsJSON(resultJsonFile);
         console.log(jsonFileObject);
       
+        
     }
     else
     {
