@@ -11,7 +11,7 @@ const main = async () => {
 
 const getTasks = await todo.getAllTasks();
 console.log(getTasks);
-
+console.log("After get Tasks");
 const removeTask = await todo.removeTask("1053a020-a606-11e7-8c5a-87dc53dd6db7");
 console.log("first task is removed");
 //try{
