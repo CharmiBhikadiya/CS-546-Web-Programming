@@ -14,31 +14,46 @@ router.get("/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const recipeList = await recipeData.getAllRecipes();
-    res.json(recipeList);
+  
+    const recipeList = await recipeData.getAllRecipes(req.params.id);
+    var recipes = [];
+    for(let i=0;i<recipeList.length;i++)
+    {
+      let showRecipe = {
+      _id: recipeList[i]._id,
+      title: recipeList[i].title
+    };
+
+      recipes.push(showRecipe);
+    }
+    //res.json(recipe);
+    res.json(recipes);
   } catch (e) {
-    res.sendStatus(500);
+    res.status(404).json({ error: "Recipes not found" });
   }
 });
 
 router.post("/", async (req, res) => {
   const recipeInfo = req.body;
 
-  // if (!userInfo) {
-  //   res.status(400).json({ error: "You must provide data to create a user" });
-  //   return;
-  // }
+  if (!recipeInfo) {
+    res.status(400).json({ error: "You must provide data to create a recipe" });
+    return;
+  }
 
-  // if (!userInfo.firstName) {
-  //   res.status(400).json({ error: "You must provide a first name" });
-  //   return;
-  // }
+  if (!recipeInfo.title || typeof recipeInfo.title !== 'string') {
+    res.status(400).json({ error: "You must provide a valid title" });
+    return;
+  }
 
-  // if (!userInfo.lastName) {
-  //   res.status(400).json({ error: "You must provide a last name" });
-  //   return;
-  // }
-
+  if (!recipeInfo.ingredients) {
+    res.status(400).json({ error: "You must provide a ingredients" });
+    return;
+  }
+  if (!recipeInfo.steps) {
+    res.status(400).json({ error: "You must provide steps" });
+    return;
+  }
   try {
     const newRecipe = await recipeData.addRecipe(
       recipeInfo.title,
@@ -54,21 +69,6 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const recipeInfo = req.body;
-
-  // if (!userInfo) {
-  //   res.status(400).json({ error: "You must provide data to update a user" });
-  //   return;
-  // }
-
-  // if (!userInfo.firstName) {
-  //   res.status(400).json({ error: "You must provide a first name" });
-  //   return;
-  // }
-
-  // if (!userInfo.lastName) {
-  //   res.status(400).json({ error: "You must provide a last name" });
-  //   return;
-  // }
 
   try {
     await recipeData.getRecipeById(req.params.id);
@@ -95,7 +95,7 @@ router.delete("/:id", async (req, res) => {
 
   try {
     await recipeData.removeRecipe(req.params.id);
-    res.status(200).send("Recipe deleted");
+    res.status(200).send("Recipe with deleted");
   } catch (e) {
     res.sendStatus(500);
     return;
